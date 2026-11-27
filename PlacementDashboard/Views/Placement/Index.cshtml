@@ -11,7 +11,7 @@
 
     // Helper: clicking a header toggles sort direction.
     string NextSort(string col) => sort == col ? col + "_desc" : col;
-    string Arrow(string col) => sort == col ? " ▲" : (sort == col + "_desc" ? " ▼" : "");
+    string Arrow(string col) => sort == col ? " ^" : (sort == col + "_desc" ? " v" : "");
     string nextName = NextSort("name");
     string nextCompany = NextSort("company");
     string nextPackage = NextSort("package");
@@ -84,13 +84,13 @@
     <thead class="table-dark">
         <tr>
             <th>
-                <a asp-action="Index" asp-route-sort="@nextName" asp-route-search="@search" asp-route-company="@company" asp-route-year="@year" class="text-white text-decoration-none">Name@Arrow("name")</a>
+                <a asp-action="Index" asp-route-sort="@nextName" asp-route-search="@search" asp-route-company="@company" asp-route-year="@year" class="text-white text-decoration-none">Name@(Arrow("name"))</a>
             </th>
             <th>
-                <a asp-action="Index" asp-route-sort="@nextCompany" asp-route-search="@search" asp-route-company="@company" asp-route-year="@year" class="text-white text-decoration-none">Company@Arrow("company")</a>
+                <a asp-action="Index" asp-route-sort="@nextCompany" asp-route-search="@search" asp-route-company="@company" asp-route-year="@year" class="text-white text-decoration-none">Company@(Arrow("company"))</a>
             </th>
             <th>
-                <a asp-action="Index" asp-route-sort="@nextPackage" asp-route-search="@search" asp-route-company="@company" asp-route-year="@year" class="text-white text-decoration-none">Package (LPA)@Arrow("package")</a>
+                <a asp-action="Index" asp-route-sort="@nextPackage" asp-route-search="@search" asp-route-company="@company" asp-route-year="@year" class="text-white text-decoration-none">Package (LPA)@(Arrow("package"))</a>
             </th>
             <th>Branch</th>
             <th>Year</th>
