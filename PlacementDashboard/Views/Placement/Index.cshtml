@@ -1,0 +1,127 @@
+@model IEnumerable<PlacementDashboard.Models.Placement>
+@{
+    ViewData["Title"] = "Placement Dashboard";
+    string sort = ViewBag.Sort;
+    string search = ViewBag.Search;
+    string company = ViewBag.Company;
+    int? year = ViewBag.Year;
+    int pageNo = ViewBag.Page;
+    int totalPages = ViewBag.TotalPages;
+    int totalRows = ViewBag.TotalRows;
+
+    // Helper: clicking a header toggles sort direction.
+    string NextSort(string col) => sort == col ? col + "_desc" : col;
+    string Arrow(string col) => sort == col ? " ▲" : (sort == col + "_desc" ? " ▼" : "");
+    string nextName = NextSort("name");
+    string nextCompany = NextSort("company");
+    string nextPackage = NextSort("package");
+}
+
+<h2 class="mb-3">Placement Dashboard</h2>
+
+@* ---- Summary stat cards (computed in the controller) ---- *@
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary mb-2">
+            <div class="card-body">
+                <h5 class="card-title">Total Placed</h5>
+                <h3 class="card-text">@ViewBag.TotalPlaced</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-success mb-2">
+            <div class="card-body">
+                <h5 class="card-title">Average Package</h5>
+                <h3 class="card-text">@ViewBag.AveragePackage LPA</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-warning mb-2">
+            <div class="card-body">
+                <h5 class="card-title">Highest Package</h5>
+                <h3 class="card-text">@ViewBag.HighestPackage LPA</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-info mb-2">
+            <div class="card-body">
+                <h5 class="card-title">Companies</h5>
+                <h3 class="card-text">@ViewBag.CompaniesCount</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* ---- Data controls: search box + DropDownList filters ---- *@
+<form method="get" class="row g-2 mb-3">
+    <div class="col-md-4">
+        <input type="text" name="search" value="@search" class="form-control"
+               placeholder="Search by name or company..." />
+    </div>
+    <div class="col-md-3">
+        @Html.DropDownList("company",
+            new SelectList(ViewBag.Companies, company),
+            "All Companies", new { @class = "form-select" })
+    </div>
+    <div class="col-md-2">
+        @Html.DropDownList("year",
+            new SelectList(ViewBag.Years, year),
+            "All Years", new { @class = "form-select" })
+    </div>
+    <div class="col-md-3">
+        <button type="submit" class="btn btn-primary">Filter</button>
+        <a asp-action="Index" class="btn btn-secondary">Clear</a>
+    </div>
+</form>
+
+<p>Showing <strong>@Model.Count()</strong> of <strong>@totalRows</strong> students - Page @pageNo of @totalPages</p>
+
+@* ---- Data table (GridView equivalent): sorting + paging ---- *@
+<table class="table table-striped table-bordered">
+    <thead class="table-dark">
+        <tr>
+            <th>
+                <a asp-action="Index" asp-route-sort="@nextName" asp-route-search="@search" asp-route-company="@company" asp-route-year="@year" class="text-white text-decoration-none">Name@Arrow("name")</a>
+            </th>
+            <th>
+                <a asp-action="Index" asp-route-sort="@nextCompany" asp-route-search="@search" asp-route-company="@company" asp-route-year="@year" class="text-white text-decoration-none">Company@Arrow("company")</a>
+            </th>
+            <th>
+                <a asp-action="Index" asp-route-sort="@nextPackage" asp-route-search="@search" asp-route-company="@company" asp-route-year="@year" class="text-white text-decoration-none">Package (LPA)@Arrow("package")</a>
+            </th>
+            <th>Branch</th>
+            <th>Year</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Name</td>
+                <td>@item.Company</td>
+                <td>@item.PackageLPA</td>
+                <td>@item.Branch</td>
+                <td>@item.Year</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Details</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@* ---- Paging links ---- *@
+<nav>
+    <ul class="pagination">
+        @for (int i = 1; i <= totalPages; i++)
+        {
+            <li class="page-item @(i == pageNo ? "active" : "")">
+                <a class="page-link" href="/Placement/Index?page=@i&sort=@sort&search=@search&company=@company&year=@year">@i</a>
+            </li>
+        }
+    </ul>
+</nav>
